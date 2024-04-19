@@ -306,7 +306,7 @@ describe('BNext', function () {
         expect(await bnext.balanceOf(other.address)).to.equal(ethers.parseEther('100'));
       });
 
-      it('should allow the FEE_MANAGER to add and remove whitelisted addresses', async () => {
+      it('should allow the FEE_MANAGER to remove whitelisted addresses', async () => {
         const { bnext } = await loadFixture(deployBNext);
 
         const [owner, other, feeTreasury] = await ethers.getSigners();
