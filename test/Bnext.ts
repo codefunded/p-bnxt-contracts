@@ -66,7 +66,7 @@ describe('BNext', function () {
   });
 
   describe('Burning', () => {
-    it('Should allow everyone to burn tokens ', async () => {
+    it('Should allow everyone to burn tokens', async () => {
       const { bnext } = await loadFixture(deployBNext);
 
       const [, other] = await ethers.getSigners();
@@ -265,6 +265,26 @@ describe('BNext', function () {
 
       const treasuryBalance = await bnext.balanceOf(feeTreasury.address);
       expect(treasuryBalance).to.equal(amount / 100n);
+    });
+
+    it('should incur a fee when batch transferring', async () => {
+      const { bnext } = await loadFixture(deployBNext);
+
+      const [, other, other2, feeTreasury] = await ethers.getSigners();
+
+      await bnext.setFeeMode({
+        feeType: 1, // percentage
+        feePercentageInBasisPoints: 100, // 1%
+        fixedFeeAmount: 0,
+      });
+      await bnext.setFeeTreasuryAddress(feeTreasury.address);
+
+      const amount = ethers.parseEther('100');
+
+      await bnext.batchTransfer([other.address, other2.address], [amount, amount]);
+
+      const treasuryBalance = await bnext.balanceOf(feeTreasury.address);
+      expect(treasuryBalance).to.equal((amount / 100n) * 2n);
     });
 
     describe('Whitelisted addresses excluded from fees', () => {

@@ -10,11 +10,7 @@ const deployBNext: DeployFunction = async function ({ getUnnamedAccounts, deploy
 
   const bnext = await upgrades.deployProxy(
     BNextFactory,
-    [
-      deployer,
-      deploymentConfig.args.initialSupply,
-      deploymentConfig.args.yearlyMintLimit,
-    ],
+    [deployer, deploymentConfig.args.initialSupply],
     {
       kind: 'uups',
     },
