@@ -24,9 +24,11 @@ describe('BNext', function () {
     await BNextProxy.waitForDeployment();
 
     const bnext = await ethers.getContractAt('BNext', await BNextProxy.getAddress());
-    const PermitBurner = await ethers.getContractFactory('PermitBurner');
-    const permitBurner = await PermitBurner.deploy();
-    return { bnext, permitBurner, owner };
+    const thirdPartyContractMockFactory = await ethers.getContractFactory(
+      'ThridPartyContractMock',
+    );
+    const thridPartyContractMock = await thirdPartyContractMockFactory.deploy();
+    return { bnext, thridPartyContractMock, owner };
   }
 
   describe('Deployment', function () {
@@ -79,7 +81,7 @@ describe('BNext', function () {
     });
 
     it('should allow to burn tokens in one transaction with permit', async () => {
-      const { bnext, permitBurner } = await loadFixture(deployBNext);
+      const { bnext, thridPartyContractMock } = await loadFixture(deployBNext);
 
       const [, other] = await ethers.getSigners();
       const amount = ethers.parseEther('100');
@@ -87,17 +89,17 @@ describe('BNext', function () {
       const { r, s, v } = await getPermitSignature(
         other,
         bnext,
-        await permitBurner.getAddress(),
+        await thridPartyContractMock.getAddress(),
         amount,
       );
 
       await bnext.transfer(other.address, amount);
-      await permitBurner
+      await thridPartyContractMock
         .connect(other)
         .burnWithPermit(
           await bnext.getAddress(),
           other.address,
-          await permitBurner.getAddress(),
+          await thridPartyContractMock.getAddress(),
           amount,
           ethers.MaxUint256,
           v,
@@ -106,6 +108,36 @@ describe('BNext', function () {
         );
 
       expect(await bnext.balanceOf(other.address)).to.equal(0);
+    });
+  });
+
+  describe('Transfers', () => {
+    it('Should allow transfers with permit', async () => {
+      const { bnext, thridPartyContractMock } = await loadFixture(deployBNext);
+
+      const [, other] = await ethers.getSigners();
+      const amount = ethers.parseEther('100');
+
+      const { r, s, v } = await getPermitSignature(
+        other,
+        bnext,
+        await thridPartyContractMock.getAddress(),
+        amount,
+      );
+
+      await bnext.transfer(other.address, amount);
+
+      await thridPartyContractMock.transferWithPermit(
+        await bnext.getAddress(),
+        other.address,
+        amount,
+        ethers.MaxUint256,
+        v,
+        r,
+        s,
+      );
+
+      expect(await bnext.balanceOf(thridPartyContractMock.getAddress())).to.equal(amount);
     });
   });
 
