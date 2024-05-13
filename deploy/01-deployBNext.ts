@@ -1,16 +1,16 @@
 import { DeployFunction } from 'hardhat-deploy/types';
-import { ethers, upgrades } from 'hardhat';
+import { ethers, upgrades, getNamedAccounts } from 'hardhat';
 import { deploymentConfig } from '../deploymentConfig';
 
-const deployBNext: DeployFunction = async function ({ getUnnamedAccounts, deployments }) {
+const deployBNext: DeployFunction = async function ({ deployments }) {
   const { log } = deployments;
-  const [deployer] = await getUnnamedAccounts();
+  const { owner } = await getNamedAccounts();
 
   const BNextFactory = await ethers.getContractFactory('BNext');
 
   const bnext = await upgrades.deployProxy(
     BNextFactory,
-    [deployer, deploymentConfig.args.initialSupply],
+    [owner, deploymentConfig.args.initialSupply, deploymentConfig.args.name, deploymentConfig.args.symbol],
     {
       kind: 'uups',
     },

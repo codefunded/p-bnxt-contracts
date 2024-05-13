@@ -48,10 +48,10 @@ contract BNext is
     _disableInitializers();
   }
 
-  function initialize(address _owner, uint256 _initialSupply) public initializer {
-    __ERC20_init('BeNext', 'BNXT');
+  function initialize(address _owner, uint256 _initialSupply, string memory _name, string memory _symbol) public initializer {
+    __ERC20_init(_name, _symbol);
     __ERC20Burnable_init();
-    __ERC20Permit_init('BeNext');
+    __ERC20Permit_init(_name);
     __AccessControl_init();
     _grantRole(DEFAULT_ADMIN_ROLE, _owner);
     _grantRole(FEE_MANAGER_ROLE, _owner);

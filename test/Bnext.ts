@@ -16,7 +16,7 @@ describe('BNext', function () {
     const BNextFactory = await hre.ethers.getContractFactory('BNext');
     const BNextProxy = await upgrades.deployProxy(
       BNextFactory,
-      [owner.address, INITIAL_SUPPLY],
+      [owner.address, INITIAL_SUPPLY, 'BNXT', 'BNXT'],
       {
         kind: 'uups',
       },
