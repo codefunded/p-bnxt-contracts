@@ -6,9 +6,7 @@ import { z } from 'zod';
 export const env = createEnv({
   server: {
     POLYGON_MAINNET_RPC: z.string().min(1).default('https://polygon-rpc.com'),
-    PRIVATE_KEY: z
-      .string()
-      .min(64),
+    PRIVATE_KEY: z.string().min(64),
     POLYGONSCAN_API_KEY: z.string().min(1),
     POLYGON_TESTNET_RPC: z.string().optional().default('https://polygon-rpc.com'),
   },
