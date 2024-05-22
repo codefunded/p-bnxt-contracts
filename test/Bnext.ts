@@ -1,36 +1,10 @@
-import { time, loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
+import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
-import hre, { ethers, upgrades } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { getPermitSignature } from '../utils/getPermitSignature';
-
-const INITIAL_SUPPLY = ethers.parseEther(String(1_000_000_000n));
+import { INITIAL_SUPPLY, deployBNext } from '../utils/testUtils';
 
 describe('BNext', function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
-  async function deployBNext() {
-    // Contracts are deployed using the first signer/account by default
-    const [owner] = await hre.ethers.getSigners();
-
-    const BNextFactory = await hre.ethers.getContractFactory('BNext');
-    const BNextProxy = await upgrades.deployProxy(
-      BNextFactory,
-      [owner.address, INITIAL_SUPPLY, 'BNXT', 'BNXT'],
-      {
-        kind: 'uups',
-      },
-    );
-    await BNextProxy.waitForDeployment();
-
-    const bnext = await ethers.getContractAt('BNext', await BNextProxy.getAddress());
-    const thirdPartyContractMockFactory = await ethers.getContractFactory(
-      'ThridPartyContractMock',
-    );
-    const thridPartyContractMock = await thirdPartyContractMockFactory.deploy();
-    return { bnext, thridPartyContractMock, owner };
-  }
-
   describe('Deployment', function () {
     it('Should set the correct token symbol', async function () {
       const { bnext } = await loadFixture(deployBNext);

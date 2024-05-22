@@ -22,7 +22,7 @@ const config: HardhatUserConfig = {
       url: env.POLYGON_TESTNET_RPC,
       chainId: 80002,
       accounts: [env.PRIVATE_KEY],
-    }
+    },
   },
   namedAccounts: {
     owner: {
@@ -33,8 +33,8 @@ const config: HardhatUserConfig = {
     apiKey: env.POLYGONSCAN_API_KEY,
   },
   sourcify: {
-    enabled: true
-  }
+    enabled: true,
+  },
 };
 
 export default config;
